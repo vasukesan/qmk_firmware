@@ -19,7 +19,7 @@ enum ctrl_keycodes {
     DBG_KBD,            //DEBUG Toggle Keyboard Prints                              //
     DBG_MOU,            //DEBUG Toggle Mouse Prints                                 //
     MD_BOOT,             //Restart into bootloader after hold timeout                //Working
-    M_BTN //custom....does nothing.
+    M_BTN 		//custom....does nothing.
 };
 
 keymap_config_t keymap_config;
