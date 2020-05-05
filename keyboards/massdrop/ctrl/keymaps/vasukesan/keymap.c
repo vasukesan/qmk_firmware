@@ -19,7 +19,7 @@ enum ctrl_keycodes {
     DBG_KBD,            //DEBUG Toggle Keyboard Prints                              //
     DBG_MOU,            //DEBUG Toggle Mouse Prints                                 //
     MD_BOOT,             //Restart into bootloader after hold timeout                //Working
-    L_MINE
+    M_BTN //custom....does nothing.
 };
 
 keymap_config_t keymap_config;
@@ -27,15 +27,15 @@ keymap_config_t keymap_config;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
         KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,             KC_PSCR, KC_SLCK, KC_PAUS, \
-        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,   KC_INS,  KC_HOME, KC_PGUP, \
+        KC_LEAD, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,   KC_INS,  KC_HOME, KC_PGUP, \
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,   KC_DEL,  KC_END,  KC_PGDN, \
         KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, KC_ENT, \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,                              KC_UP, \
-        KC_LCTL, KC_LGUI, KC_LALT,                   KC_SPC,                             KC_RALT, KC_RGUI,   KC_APP,  MO(1),            KC_LEFT, KC_DOWN, KC_RGHT \
+        KC_LCTL, KC_LGUI, KC_LALT,                   KC_SPC,                             KC_RALT, KC_RGUI,   KC_LEAD,  MO(1),            KC_LEFT, KC_DOWN, KC_RGHT \
     ),
     [1] = LAYOUT(
-        DM_RSTP, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,            _______, L_MINE, _______, \
-        _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,   _______, _______, _______, \
+        DM_RSTP, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,            _______, M_BTN, _______, \
+        KC_GRV, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,   _______, _______, _______, \
         L_T_BR,  _______, L_BRI,   _______, L_PSI, _______, _______, _______, U_T_AGCR,_______, _______, _______, _______, _______,   _______, KC_MUTE, _______, \
         _______, L_PTP,   L_BRD,   L_PTN,   L_PSD, _______, _______, _______, _______, _______, _______, _______, _______, \
         _______, L_T_MD,  L_T_ONF, _______, _______, MD_BOOT, NK_TOGG, _______, _______, _______, _______, _______,                              KC_VOLU, \
@@ -55,10 +55,57 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+    //slowest animation speed
+    led_animation_speed = 0;
+    led_animation_speed += ANIMATION_SPEED_STEP;
 };
+
+LEADER_EXTERNS();
 
 // Runs constantly in the background, in a loop.
 void matrix_scan_user(void) {
+    LEADER_DICTIONARY() {
+        leader_end();
+        leading = false;
+
+        // SEQ_ONE_KEY(KC_F) {
+        //   // Anything you can do in a macro.
+        //   SEND_STRING("QMK is awesome.");
+        // }
+        SEQ_TWO_KEYS(KC_D, KC_D) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LGUI));
+
+        }
+        SEQ_TWO_KEYS(KC_D, KC_W) {
+            SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LALT));
+        }
+
+        SEQ_TWO_KEYS(KC_G, KC_G) {
+            SEND_STRING(SS_TAP(X_HOME));    
+        }
+
+        SEQ_TWO_KEYS(KC_LSFT, KC_G) {
+            SEND_STRING(SS_TAP(X_END));
+        }
+
+        SEQ_TWO_KEYS(KC_Y, KC_Y) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) "x" SS_UP(X_LGUI));
+
+        }
+
+        SEQ_TWO_KEYS(KC_Y, KC_W) {
+            SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) SS_UP(X_LALT) SS_LGUI("x"));    
+        }
+        // SEQ_THREE_KEYS(KC_D, KC_D, KC_S) {
+        //   SEND_STRING("https://start.duckduckgo.com\n");
+        // }
+        // SEQ_TWO_KEYS(KC_A, KC_S) {
+        //   register_code(KC_LGUI);
+        //   register_code(KC_S);
+        //   unregister_code(KC_S);
+        //   unregister_code(KC_LGUI);
+        // }
+    }
 };
 
 #define MODS_SHIFT  (get_mods() & MOD_BIT(KC_LSHIFT) || get_mods() & MOD_BIT(KC_RSHIFT))
@@ -170,16 +217,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 TOGGLE_FLAG_AND_PRINT(debug_mouse, "Debug mouse");
             }
             return false;
-        case L_MINE: //drop animation speed by 3
+        case M_BTN:
             if (record->event.pressed) {
-                // when keycode QMKBEST is pressed
-                led_animation_direction = !led_animation_direction;
-                led_animation_speed -= ANIMATION_SPEED_STEP;
-                led_animation_speed -= ANIMATION_SPEED_STEP;
-                led_animation_speed -= ANIMATION_SPEED_STEP;
-                if (led_animation_speed < 0) led_animation_speed = 0;
-            } else {
-                // when keycode QMKBEST is released
+                SEND_STRING("asdf");
+            } else{
+                //release
             }
             return false;
         case MD_BOOT:
