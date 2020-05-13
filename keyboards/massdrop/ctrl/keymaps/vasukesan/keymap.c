@@ -1,3 +1,5 @@
+//custom keymap by @vasukesan
+
 #include QMK_KEYBOARD_H
 
 enum ctrl_keycodes {
