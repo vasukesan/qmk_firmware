@@ -2,7 +2,8 @@
 
 enum vas_layers {
     _QWERTY,
-    _FNC
+    _FNC,
+    _VIM
 };
 
 enum alt_keycodes {
@@ -27,22 +28,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RGUI, MO(_FNC),   KC_LEFT, KC_DOWN, KC_RGHT  \
     ),
     [_FNC] = LAYOUT_65_ansi_blocker(
-        DM_RSTP,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, _______, \
-        _______, _______, RGB_VAI, _______, DM_REC1, _______, _______, _______, _______,_______, DM_PLY1, _______, _______, _______, _______, \
-        KC_CAPS, RGB_RMOD,RGB_VAD, RGB_MOD, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
-        _______, RGB_TOG, _______, _______, _______, MD_BOOT, _______, KC_MUTE, _______, _______, _______, _______,          KC_VOLU, _______, \
-        _______, _______, _______,                            KC_MPLY,                            _______, _______, KC_MPRV, KC_VOLD, KC_MNXT  \
+        DM_RSTP,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, RGB_VAI, XXXXXXX, DM_REC1, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX, DM_PLY1, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), \
+        KC_CAPS, RGB_RMOD,RGB_VAD, RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
+        XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, MD_BOOT, XXXXXXX, KC_MUTE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          KC_VOLU, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX,                            KC_MPLY,                            XXXXXXX, XXXXXXX, KC_MPRV, KC_VOLD, KC_MNXT  \
     ),
-    /*
-    [X] = LAYOUT(
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
-        _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______  \
+    
+    [_VIM] = LAYOUT(
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), \
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LEFT, KC_UP, KC_DOWN, KC_LEFT, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX,                            XXXXXXX,                            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
     ),
-    */
+    
 };
+
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
@@ -53,10 +55,68 @@ void matrix_init_user(void) {
     rgb_matrix_decrease_speed();
     rgb_matrix_decrease_speed();
     rgb_matrix_decrease_speed();
-    rgb_matrix_decrease_speed();
-    rgb_matrix_decrease_speed();
+    // rgb_matrix_decrease_speed();
 
 };
+
+void rgb_matrix_indicators_user(void){
+    uint8_t layer = biton32(layer_state);
+
+    // INSERT CODE HERE: turn off all leds
+
+    switch (layer) {
+        case _QWERTY:
+            // INSERT CODE HERE: turn on leds that correspond to YOUR_LAYER_1
+            break;
+        case _FNC:
+            rgb_matrix_set_color_all(0, 0, 0);
+
+            //Hidden normal functionality
+            for(uint8_t i=1;i<13;i++){ 
+                rgb_matrix_set_color(i,0xFF, 0xFF, 0xFF); //Fn keys
+
+            }
+            rgb_matrix_set_color(30 , 0xFF, 0xFF, 0xFF); //KC_CAPS
+
+            //Dynamic macro
+            rgb_matrix_set_color(0, 0x7A, 0x00, 0xFF);  //KC_GESC 
+            rgb_matrix_set_color(19, 0x7A, 0x00, 0xFF); //KC_R
+            rgb_matrix_set_color(25, 0x7A, 0x00, 0xFF); //KC_P
+
+            //RGB controls
+            rgb_matrix_set_color(17, 0xFF, 0xD9, 0x00); //KC_W
+            rgb_matrix_set_color(31, 0xFF, 0xD9, 0x00); //KC_A
+            rgb_matrix_set_color(32, 0xFF, 0xD9, 0x00); //KC_S
+            rgb_matrix_set_color(33, 0xFF, 0xD9, 0x00); //KC_D
+            rgb_matrix_set_color(45, 0xFF, 0xD9, 0x00); //KC_Z
+
+            //Media
+            rgb_matrix_set_color(66, 0x00, 0xFF, 0xFF); //KC_RIGHT
+            rgb_matrix_set_color(65, 0x00, 0xFF, 0xFF); //KC_DOWN
+            rgb_matrix_set_color(64, 0x00, 0xFF, 0xFF); //KC_LEFT
+            rgb_matrix_set_color(61, 0x00, 0xFF, 0xFF); //KC_SPACE
+            rgb_matrix_set_color(56, 0x00, 0xFF, 0xFF); //KC_UP
+            rgb_matrix_set_color(51, 0x00, 0xFF, 0xFF); //KC_M
+
+            //Device firmware update mode
+            rgb_matrix_set_color(49, 0xFF, 0x00, 0x00); // KC_B
+            
+            
+            break;
+        case _VIM:
+            rgb_matrix_set_color_all(0, 0, 0);
+            rgb_matrix_set_color(23, 0x00, 0xFF, 0x00); //KC_I
+            rgb_matrix_set_color(36, 0x47, 0x6E, 0x6A); //KC_H
+            rgb_matrix_set_color(37, 0x47, 0x6E, 0x6A); //KC_J
+            rgb_matrix_set_color(38, 0x47, 0x6E, 0x6A); //KC_K
+            rgb_matrix_set_color(39, 0x47, 0x6E, 0x6A); //KC_L
+
+
+
+
+    }
+}
+
 
 LEADER_EXTERNS();
 
@@ -66,10 +126,19 @@ void matrix_scan_user(void) {
         leader_end();
         leading = false;
 
-        // SEQ_ONE_KEY(KC_F) {
-        //   // Anything you can do in a macro.
-        //   SEND_STRING("QMK is awesome.");
-        // }
+        SEQ_ONE_KEY(KC_0) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_LEFT) SS_UP(X_LGUI));
+        }
+        SEQ_TWO_KEYS(KC_LSFT, KC_4) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RIGHT) SS_UP(X_LGUI));
+        }
+        SEQ_TWO_KEYS(KC_G, KC_G) {
+            SEND_STRING(SS_TAP(X_HOME));    
+        }
+
+        SEQ_TWO_KEYS(KC_LSFT, KC_G) {
+            SEND_STRING(SS_TAP(X_END));
+        }
         SEQ_TWO_KEYS(KC_D, KC_D) {
             SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LGUI));
 
@@ -78,13 +147,7 @@ void matrix_scan_user(void) {
             SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LALT));
         }
 
-        SEQ_TWO_KEYS(KC_G, KC_G) {
-            SEND_STRING(SS_TAP(X_HOME));    
-        }
-
-        SEQ_TWO_KEYS(KC_LSFT, KC_G) {
-            SEND_STRING(SS_TAP(X_END));
-        }
+       
 
         SEQ_TWO_KEYS(KC_Y, KC_Y) {
             SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) "x" SS_UP(X_LGUI));
