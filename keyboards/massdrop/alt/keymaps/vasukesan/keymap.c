@@ -1,5 +1,10 @@
 #include QMK_KEYBOARD_H
 
+enum vas_layers {
+    _QWERTY,
+    _FNC
+};
+
 enum alt_keycodes {
     U_T_AUTO = SAFE_RANGE, //USB Extra Port Toggle Auto Detect / Always Active
     U_T_AGCR,              //USB Toggle Automatic GCR control
@@ -8,24 +13,25 @@ enum alt_keycodes {
     DBG_KBD,               //DEBUG Toggle Keyboard Prints
     DBG_MOU,               //DEBUG Toggle Mouse Prints
     MD_BOOT,               //Restart into bootloader after hold timeout
+    VAS_CAPS
 };
 
 keymap_config_t keymap_config;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT_65_ansi_blocker(
-        KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,  \
+    [_QWERTY] = LAYOUT_65_ansi_blocker(
+        KC_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,  \
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_HOME, \
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP, \
+        KC_LEAD, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP, \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,          KC_UP,   KC_PGDN, \
-        KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RALT, MO(1),   KC_LEFT, KC_DOWN, KC_RGHT  \
+        KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RGUI, MO(_FNC),   KC_LEFT, KC_DOWN, KC_RGHT  \
     ),
-    [1] = LAYOUT_65_ansi_blocker(
-        KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_MUTE, \
-        _______, RGB_SPD, RGB_VAI, RGB_SPI, RGB_HUI, RGB_SAI, _______, U_T_AUTO,U_T_AGCR,_______, KC_PSCR, KC_SLCK, KC_PAUS, _______, KC_END, \
-        _______, RGB_RMOD,RGB_VAD, RGB_MOD, RGB_HUD, RGB_SAD, _______, _______, _______, _______, _______, _______,          _______, KC_VOLU, \
-        _______, RGB_TOG, _______, _______, _______, MD_BOOT, NK_TOGG, DBG_TOG, _______, _______, _______, _______,          KC_PGUP, KC_VOLD, \
-        _______, _______, _______,                            _______,                            _______, _______, KC_HOME, KC_PGDN, KC_END  \
+    [_FNC] = LAYOUT_65_ansi_blocker(
+        DM_RSTP,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, _______, \
+        _______, _______, RGB_VAI, _______, DM_REC1, _______, _______, _______, _______,_______, DM_PLY1, _______, _______, _______, _______, \
+        KC_CAPS, RGB_RMOD,RGB_VAD, RGB_MOD, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
+        _______, RGB_TOG, _______, _______, _______, MD_BOOT, _______, KC_MUTE, _______, _______, _______, _______,          KC_VOLU, _______, \
+        _______, _______, _______,                            KC_MPLY,                            _______, _______, KC_MPRV, KC_VOLD, KC_MNXT  \
     ),
     /*
     [X] = LAYOUT(
@@ -40,10 +46,64 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+    // SEND_STRING(SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD));
+    // tap_keycode();
+    // register_code(RGB_SPD);
+    // unregister_code(RGB_SPD);
+    rgb_matrix_decrease_speed();
+    rgb_matrix_decrease_speed();
+    rgb_matrix_decrease_speed();
+    rgb_matrix_decrease_speed();
+    rgb_matrix_decrease_speed();
+
 };
+
+LEADER_EXTERNS();
 
 // Runs constantly in the background, in a loop.
 void matrix_scan_user(void) {
+    LEADER_DICTIONARY() {
+        leader_end();
+        leading = false;
+
+        // SEQ_ONE_KEY(KC_F) {
+        //   // Anything you can do in a macro.
+        //   SEND_STRING("QMK is awesome.");
+        // }
+        SEQ_TWO_KEYS(KC_D, KC_D) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LGUI));
+
+        }
+        SEQ_TWO_KEYS(KC_D, KC_W) {
+            SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LALT));
+        }
+
+        SEQ_TWO_KEYS(KC_G, KC_G) {
+            SEND_STRING(SS_TAP(X_HOME));    
+        }
+
+        SEQ_TWO_KEYS(KC_LSFT, KC_G) {
+            SEND_STRING(SS_TAP(X_END));
+        }
+
+        SEQ_TWO_KEYS(KC_Y, KC_Y) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) "x" SS_UP(X_LGUI));
+
+        }
+
+        SEQ_TWO_KEYS(KC_Y, KC_W) {
+            SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) SS_UP(X_LALT) SS_LGUI("x"));    
+        }
+        // SEQ_THREE_KEYS(KC_D, KC_D, KC_S) {
+        //   SEND_STRING("https://start.duckduckgo.com\n");
+        // }
+        // SEQ_TWO_KEYS(KC_A, KC_S) {
+        //   register_code(KC_LGUI);
+        //   register_code(KC_S);
+        //   unregister_code(KC_S);
+        //   unregister_code(KC_LGUI);
+        // }
+    }
 };
 
 #define MODS_SHIFT  (get_mods() & MOD_BIT(KC_LSHIFT) || get_mods() & MOD_BIT(KC_RSHIFT))
@@ -85,12 +145,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
         case MD_BOOT:
+            // if (record->event.pressed) {
+            //     key_timer = timer_read32();
+            // } else {
+            //     if (timer_elapsed32(key_timer) >= 500) {
+            //         reset_keyboard();
+            //     }
+            // }
             if (record->event.pressed) {
-                key_timer = timer_read32();
-            } else {
-                if (timer_elapsed32(key_timer) >= 500) {
-                    reset_keyboard();
+                 key_timer = timer_read32();
+          } else {
+                if(get_mods() & MOD_MASK_SHIFT) {
+                    del_mods(MOD_MASK_SHIFT);
+                    if (timer_elapsed32(key_timer) >= 500) {
+                        reset_keyboard();
+                    }
                 }
+                
+          }
+            return false;
+        case VAS_CAPS:
+            if (record->event.pressed) {
+                SEND_STRING("asdf");
+            } else{
+                //release
             }
             return false;
         case RGB_TOG:
