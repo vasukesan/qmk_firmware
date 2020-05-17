@@ -25,3 +25,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LEADER_PER_KEY_TIMING 
 
 #define RGBLIGHT_LAYERS
+
+#define LEADER_KEY_STRICT_KEY_PROCESSING

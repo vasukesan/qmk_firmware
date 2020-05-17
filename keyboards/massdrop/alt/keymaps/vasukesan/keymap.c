@@ -3,8 +3,10 @@
 enum vas_layers {
     _QWERTY,
     _FNC,
-    _VIM
+    _NAV
 };
+
+
 
 enum alt_keycodes {
     U_T_AUTO = SAFE_RANGE, //USB Extra Port Toggle Auto Detect / Always Active
@@ -14,7 +16,9 @@ enum alt_keycodes {
     DBG_KBD,               //DEBUG Toggle Keyboard Prints
     DBG_MOU,               //DEBUG Toggle Mouse Prints
     MD_BOOT,               //Restart into bootloader after hold timeout
-    VAS_CAPS
+
+    //vas_keycodes
+    SFT_FOUR
 };
 
 keymap_config_t keymap_config;
@@ -28,19 +32,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RGUI, MO(_FNC),   KC_LEFT, KC_DOWN, KC_RGHT  \
     ),
     [_FNC] = LAYOUT_65_ansi_blocker(
-        DM_RSTP,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  XXXXXXX, XXXXXXX, \
-        XXXXXXX, XXXXXXX, RGB_VAI, XXXXXXX, DM_REC1, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX, DM_PLY1, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), \
+        DM_RSTP,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL, XXXXXXX, \
+        XXXXXXX, XXXXXXX, RGB_VAI, XXXXXXX, DM_REC1, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX, DM_PLY1, XXXXXXX, XXXXXXX, XXXXXXX, TG(_NAV), \
         KC_CAPS, RGB_RMOD,RGB_VAD, RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
         XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, MD_BOOT, XXXXXXX, KC_MUTE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          KC_VOLU, XXXXXXX, \
         XXXXXXX, XXXXXXX, XXXXXXX,                            KC_MPLY,                            XXXXXXX, XXXXXXX, KC_MPRV, KC_VOLD, KC_MNXT  \
     ),
     
-    [_VIM] = LAYOUT(
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TG(_VIM), \
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LEFT, KC_UP, KC_DOWN, KC_LEFT, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
-        XXXXXXX, XXXXXXX, XXXXXXX,                            XXXXXXX,                            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
+    [_NAV] = LAYOUT(
+        TG(_NAV), XXXXXXX, XXXXXXX, XXXXXXX, SFT_FOUR, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, KC_MS_U, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TG(_NAV), \
+        XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_R, XXXXXXX, XXXXXXX, KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
+        KC_BTN2, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX,                            KC_BTN1,                            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
     ),
     
 };
@@ -48,14 +52,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
-    // SEND_STRING(SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD) SS_TAP(X_SPD));
-    // tap_keycode();
-    // register_code(RGB_SPD);
-    // unregister_code(RGB_SPD);
-    rgb_matrix_decrease_speed();
-    rgb_matrix_decrease_speed();
-    rgb_matrix_decrease_speed();
-    // rgb_matrix_decrease_speed();
+    //speed in configured in config.h
+    rgb_matrix_mode(RGB_MATRIX_CYCLE_UP_DOWN);
+
 
 };
 
@@ -72,8 +71,8 @@ void rgb_matrix_indicators_user(void){
             rgb_matrix_set_color_all(0, 0, 0);
 
             //Hidden normal functionality
-            for(uint8_t i=1;i<13;i++){ 
-                rgb_matrix_set_color(i,0xFF, 0xFF, 0xFF); //Fn keys
+            for(uint8_t i=1;i<14;i++){ 
+                rgb_matrix_set_color(i,0xFF, 0xFF, 0xFF); //Fn keys + DEL
 
             }
             rgb_matrix_set_color(30 , 0xFF, 0xFF, 0xFF); //KC_CAPS
@@ -103,13 +102,24 @@ void rgb_matrix_indicators_user(void){
             
             
             break;
-        case _VIM:
+        case _NAV:
             rgb_matrix_set_color_all(0, 0, 0);
             rgb_matrix_set_color(23, 0x00, 0xFF, 0x00); //KC_I
             rgb_matrix_set_color(36, 0x47, 0x6E, 0x6A); //KC_H
             rgb_matrix_set_color(37, 0x47, 0x6E, 0x6A); //KC_J
             rgb_matrix_set_color(38, 0x47, 0x6E, 0x6A); //KC_K
             rgb_matrix_set_color(39, 0x47, 0x6E, 0x6A); //KC_L
+
+            //Mouse
+            rgb_matrix_set_color(17, 0xFF, 0xFF, 0xFF); //KC_W
+            rgb_matrix_set_color(31, 0xFF, 0xFF, 0xFF); //KC_A
+            rgb_matrix_set_color(32, 0xFF, 0xFF, 0xFF); //KC_S
+            rgb_matrix_set_color(33, 0xFF, 0xFF, 0xFF); //KC_D
+            //click
+            rgb_matrix_set_color(44, 0x00, 0xFF, 0xFF); //KC_Z
+            rgb_matrix_set_color(61, 0x00, 0xFF, 0xFF); //KC_SPACE
+
+
 
 
 
@@ -132,6 +142,9 @@ void matrix_scan_user(void) {
         SEQ_TWO_KEYS(KC_LSFT, KC_4) {
             SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RIGHT) SS_UP(X_LGUI));
         }
+        SEQ_TWO_KEYS(KC_LSFT, KC_6) {
+            SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RIGHT) SS_UP(X_LGUI));
+        }
         SEQ_TWO_KEYS(KC_G, KC_G) {
             SEND_STRING(SS_TAP(X_HOME));    
         }
@@ -146,8 +159,6 @@ void matrix_scan_user(void) {
         SEQ_TWO_KEYS(KC_D, KC_W) {
             SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_BSPC) SS_UP(X_LSFT) SS_UP(X_LALT));
         }
-
-       
 
         SEQ_TWO_KEYS(KC_Y, KC_Y) {
             SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_RGHT) SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_UP(X_LSFT) "x" SS_UP(X_LGUI));
@@ -215,23 +226,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             //         reset_keyboard();
             //     }
             // }
+
             if (record->event.pressed) {
                  key_timer = timer_read32();
-          } else {
+            } else {
                 if(get_mods() & MOD_MASK_SHIFT) {
                     del_mods(MOD_MASK_SHIFT);
                     if (timer_elapsed32(key_timer) >= 500) {
                         reset_keyboard();
                     }
                 }
-                
-          }
+            }
             return false;
-        case VAS_CAPS:
-            if (record->event.pressed) {
-                SEND_STRING("asdf");
+        case SFT_FOUR:
+            if (record->event.pressed) {  //https://www.reddit.com/r/olkb/comments/cnjccx/need_help_defining_custom_shifted_behaviour_using/ewchsuf/
+                SEND_STRING("1adf");
+                if(get_mods() & MOD_MASK_SHIFT){
+                    // del_mods(MOD_MASK_SHIFT);
+                    SEND_STRING("2adf");
+                    register_code16(KC_4);
+                    // SEND_STRING("4");//SS_LSFT("4"));
+                }
             } else{
-                //release
+                unregister_code16(KC_4);
+                //on release
             }
             return false;
         case RGB_TOG:
